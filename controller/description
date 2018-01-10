@@ -1,0 +1,5 @@
+Añade catalogo al menú de ventas.
+Esta página es exactamente igual que ventas-artículos, pero muestra las imágenes de los productos.
+También permite crear un catálogo en PDF con las imágenes de los productos.
+<br/>
+Licencia LGPL 3
