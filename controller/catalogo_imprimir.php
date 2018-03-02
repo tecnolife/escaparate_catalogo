@@ -33,7 +33,26 @@ require_model('tarifa.php');
 
 class catalogo_imprimir extends fbase_controller
 {
+    public $almacenes;
+    public $b_bloqueados;
+    public $b_codalmacen;
+    public $b_codfabricante;
+    public $b_codfamilia;
+    public $b_codtarifa;
+    public $b_constock;
+    public $b_orden;
+    public $b_publicos;
+    public $b_subfamilias;
+    public $b_url;
+    public $familia;
+    public $fabricante;
+    public $impuesto;
+    public $mostrar_tab_tarifas;
+    public $offset;
     public $resultados;
+    public $total_resultados;
+    public $tarifa;
+    public $transferencia_stock;
 
     public function __construct($name = __CLASS__, $title = 'catálogo', $folder = 'ventas')
     {
@@ -42,6 +61,7 @@ class catalogo_imprimir extends fbase_controller
 
     protected function private_core()
  {
+        $this->tarifa = new tarifa;
         $this->ini_filters();
         $this->search_articulos();
 
@@ -82,10 +102,23 @@ class catalogo_imprimir extends fbase_controller
             $tarifa = $tar->get($_REQUEST['b_codtarifa']);
         }
         
+        if ($familia != 0) {
+            $titulo = $familia->descripcion.' ';
+        }
+        if ($fabricante != 0) {
+            $titulo = $titulo.$fabricante->nombre.' ';
+        }
+        if ($almacen != 0) {
+            $titulo = $titulo.$almacen->nombre.' ';
+        }
+        if ($tarifa != 0) {
+            $titulo = $titulo.$tarifa->nombre.' ';
+        }
+        
         if ($logo){
             $size = getimagesize($logo);
             $width = $size[0] * 15 / $size[1];
-            $pdf->SetHeaderData('../../'.$logo, $width, 'Catálogo', $familia->descripcion.' '.$fabricante->nombre.' '.$almacen->nombre.' '.$tarifa->nombre);
+            $pdf->SetHeaderData('../../'.$logo, $width, 'Catálogo', $titulo);
         } else {
             $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $this->empresa->nombrecorto, 'Catálogo '.$_REQUEST['b_codfamilia'].' '.$_REQUEST['b_codfabricante'].' '.$_REQUEST['b_codalmacen'].' '.$_REQUEST['codtarifa']);
         }
@@ -132,7 +165,7 @@ class catalogo_imprimir extends fbase_controller
             if ($img) {
                 $html .= '<td><img style="height: 177px;" src="' . $img . '"><br/>';
                 if (strlen($value->descripcion()) > 15) {
-                    $descripcion = substr($value->descripcion(), 0, 12) . '...';
+                    $descripcion = mb_substr($value->descripcion(), 0, 12, 'UTF-8') . '...';
                 } else {
                     $descripcion = $value->descripcion();
                 }
@@ -144,11 +177,13 @@ class catalogo_imprimir extends fbase_controller
             } elseif (filter_input(INPUT_GET, 'sinimagen') == "True") {
                 $html .= '<td><img style="height: 177px;" src="plugins/escaparate_catalogo/sinimagen.jpg"><br/>';
                 if (strlen($value->descripcion()) > 15) {
-                    $descripcion = substr($value->descripcion(), 0, 12) . '...';
+                    $descripcion = mb_substr($value->descripcion(), 0, 12, 'UTF-8') . '...';
                 } else {
                     $descripcion = $value->descripcion();
                 }
-                $html .= $descripcion . ' - ' . $value->referencia . '<br/>';
+                
+                
+                $html .= $descripcion . ' ' . $value->referencia . '<br/>';
                 $html .= $this->show_precio($value->pvp, FALSE, TRUE, FS_NF0_ART) . '</td>';
                 
                 $celda++;
@@ -418,4 +453,75 @@ class catalogo_imprimir extends fbase_controller
             }
         }
     }
+    
+    private function download_resultados($sql, $order)
+    {
+        /// desactivamos el motor de plantillas
+        $this->template = FALSE;
+
+        header("content-type:application/csv;charset=UTF-8");
+        header("Content-Disposition: attachment; filename=\"articulos.csv\"");
+        echo "referencia;codfamilia;codfabricante;descripcion;pvp;iva;codbarras;stock;coste\n";
+
+        $offset2 = 0;
+        $data2 = $this->db->select_limit("SELECT *" . $sql . " ORDER BY " . $order, 1000, $offset2);
+        while ($data2) {
+            $resultados = array();
+            foreach ($data2 as $i) {
+                $resultados[] = new articulo($i);
+            }
+
+            if ($this->b_codalmacen != '') {
+                /// obtenemos el stock correcto
+                foreach ($resultados as $i => $value) {
+                    $resultados[$i]->stockfis = 0;
+                    foreach ($value->get_stock() as $s) {
+                        if ($s->codalmacen == $this->b_codalmacen) {
+                            $resultados[$i]->stockfis = $s->cantidad;
+                        }
+                    }
+                }
+            }
+
+            if ($this->b_codtarifa != '') {
+                /// aplicamos la tarifa
+                $tarifa = $this->tarifa->get($this->b_codtarifa);
+                if ($tarifa) {
+                    $tarifa->set_precios($resultados);
+
+                    /// si la tarifa añade descuento, lo aplicamos al precio
+                    foreach ($resultados as $i => $value) {
+                        $resultados[$i]->pvp -= $value->pvp * $value->dtopor / 100;
+                    }
+                }
+            }
+
+            /**
+             * libreoffice y excel toman el punto y 3 decimales como millares,
+             * así que si el usuario ha elegido 3 decimales, mejor usamos 4.
+             */
+            $nf0 = FS_NF0_ART;
+            if ($nf0 == 3) {
+                $nf0 = 4;
+            }
+
+            /// escribimos los datos de los artículos
+            foreach ($resultados as $art) {
+                echo $art->referencia . ';';
+                echo $art->codfamilia . ';';
+                echo $art->codfabricante . ';';
+                echo fs_fix_html(preg_replace('~[\r\n]+~', ' ', $art->descripcion)) . ';';
+                echo number_format($art->pvp, $nf0, FS_NF1, '') . ';';
+                echo number_format($art->get_iva(), 2, FS_NF1, '') . ';';
+                echo trim($art->codbarras) . ';';
+                echo number_format($art->stockfis, 2, FS_NF1, '') . ';';
+                echo number_format($art->preciocoste(), $nf0, FS_NF1, '') . "\n";
+
+                $offset2++;
+            }
+
+            $data2 = $this->db->select_limit("SELECT *" . $sql . " ORDER BY " . $order, 1000, $offset2);
+        }
+    }
+    
 }

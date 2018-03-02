@@ -96,18 +96,13 @@
          </div>
          
          <div class="btn-group">
-            <a class="btn btn-sm btn-success" style="width: 100%;" href="index.php?page=catalogo_imprimir&query={$fsc->b_codfabricante}&b_codfabricante={$fsc->b_codfabricante}&b_codalmacen={$fsc->b_codalmacen}&b_codfamilia={$fsc->b_codfamilia}&b_codtarifa={$fsc->b_codtarifa}&b_orden={$fsc->b_orden}">
-               <span>Imprimir Catálogo</span>
-            </a>
-         </div>
-         
-         <div class="btn-group">
             <button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                Imprimir Catálogo <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-               <li><a href="index.php?page=catalogo_imprimir&query={$fsc->b_codfabricante}&b_codfabricante={$fsc->b_codfabricante}&b_codalmacen={$fsc->b_codalmacen}&b_codfamilia={$fsc->b_codfamilia}&b_codtarifa={$fsc->b_codtarifa}&b_orden={$fsc->b_orden}&sinimagen=False">No incluir artículos sin imágen</a></li>
-               <li><a href="index.php?page=catalogo_imprimir&query={$fsc->b_codfabricante}&b_codfabricante={$fsc->b_codfabricante}&b_codalmacen={$fsc->b_codalmacen}&b_codfamilia={$fsc->b_codfamilia}&b_codtarifa={$fsc->b_codtarifa}&b_orden={$fsc->b_orden}&sinimagen=True">Incluir artículos sin imágen</a></li>
+               <!--Para poner el stock hay que añadir esto a la url &b_constock={$fsc->b_constock}-->
+               <li><a target="_blank" href="index.php?page=catalogo_imprimir&query=&b_codfabricante={$fsc->b_codfabricante}&b_codalmacen={$fsc->b_codalmacen}&b_codfamilia={$fsc->b_codfamilia}&b_codtarifa={$fsc->b_codtarifa}&b_orden={$fsc->b_orden}&sinimagen=False">No incluir artículos sin imágen</a></li>
+               <li><a target="_blank" href="index.php?page=catalogo_imprimir&query=&b_codfabricante={$fsc->b_codfabricante}&b_codalmacen={$fsc->b_codalmacen}&b_codfamilia={$fsc->b_codfamilia}&b_codtarifa={$fsc->b_codtarifa}&b_orden={$fsc->b_orden}&sinimagen=True">Incluir artículos sin imágen</a></li>
             </ul>
          </div>
          

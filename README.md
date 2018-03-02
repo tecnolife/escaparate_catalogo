@@ -17,12 +17,14 @@ https://www.facturascripts.com
 <br/>
 <strong>Errores:</strong>
 <ul>
-   <li>Si filtras por fabricante e intentas imprimir, el documento sale en blanco</li>
-   <li>Si filtras por tarifa e intentas imprimir, da error</li>
+   <li>Al marcar solo "con stock" la página escaparate se muestra bien, pero al generar el catálogo no filtra por los que tienen stock, pone todos</li>
+   <li>Lo mismo pasa con bloqueados, que saca todos los ariculos excepto los bloqueados</li>
+   <li>Con públicos me supongo que pasará lo mismo</li>
 </ul>
 
 <br/>
-<strong>v2</strong> 
+<strong>v3</strong> 
 <ul>
-   <li></li>
+   <li>Solucionado un problema con las tildes y caracteres raros como la ñ</li>
+   <li>Ahora permite imprimir el catálogo filtrado por fabricante y por tarifa</li>
 </ul>
