@@ -232,9 +232,19 @@ class catalogo_imprimir extends fbase_controller
             $this->b_codfabricante = $_REQUEST['b_codfabricante'];
         }
 
-        $this->b_constock = isset($_REQUEST['b_constock']);
-        $this->b_bloqueados = isset($_REQUEST['b_bloqueados']);
-        $this->b_publicos = isset($_REQUEST['b_publicos']);
+        //Modificado por Tecnolife
+        //$this->b_constock = isset($_REQUEST['b_constock']);
+        if ($_REQUEST['b_constock'] == 1) {
+            $this->b_constock = 1;
+        } 
+        //$this->b_bloqueados = isset($_REQUEST['b_bloqueados']);
+        if ($_REQUEST['b_bloqueados'] == 1) {
+            $this->b_bloqueados = 1;
+        } 
+        //$this->b_publicos = isset($_REQUEST['b_publicos']);
+        if ($_REQUEST['b_publicos'] == 1) {
+            $this->b_publicos = 1;
+        } 
 
         $this->b_codtarifa = '';
         if (isset($_REQUEST['b_codtarifa'])) {

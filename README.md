@@ -11,7 +11,7 @@ https://www.facturascripts.com
 <br/>
 <strong>Tareas pendientes:</strong>
 <ul>
-   <li></li>
+   <li>Quitar las pestañas superiores, ya están en artículos y aquí creo que no pintan nada</li>
 </ul>
 
 <br/>
@@ -27,4 +27,12 @@ https://www.facturascripts.com
 <ul>
    <li>Solucionado un problema con las tildes y caracteres raros como la ñ</li>
    <li>Ahora permite imprimir el catálogo filtrado por fabricante y por tarifa</li>
+</ul>
+
+<br/>
+<strong>v4</strong> 
+<ul>
+   <li>Permite imprimir el catálogo filtrado por "con stock", "bloqueados", "públicos" y por búsquedas</li>
+   <li>Resumiendo, ahora ya imprime exactamente lo que tienes ves en pantalla</li>
+   <li>Eliminadas las pestañas "Transferencias" y "Tarifas", y los botones de "Nuevo artículo" y de "Nueva transferencia"</li>
 </ul>
