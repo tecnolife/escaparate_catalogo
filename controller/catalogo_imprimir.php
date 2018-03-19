@@ -85,42 +85,46 @@ class catalogo_imprimir extends fbase_controller
             $logo = false;
         }
         
-        if (isset($_REQUEST['b_codfamilia'])) {
+        //if (isset($_REQUEST['b_codfamilia'])) {
+        $familia = 0;
+        if (filter_input(INPUT_GET, 'b_codfamilia')) {
             $fam = new familia();
             $familia = $fam->get($_REQUEST['b_codfamilia']);
+            if ($familia != 0) {
+                $titulo = $familia->descripcion . ' ';
+            }
         }
-        if (isset($_REQUEST['b_codfabricante'])) {
+        $fabricante = 0;
+        if (filter_input(INPUT_GET,'b_codfabricante')) {
             $fab = new fabricante();
             $fabricante = $fab->get($_REQUEST['b_codfabricante']);
+            if ($fabricante != 0) {
+                $titulo = $titulo . $fabricante->nombre . ' ';
+            }
         }
-        if (isset($_REQUEST['b_codalmacen'])) {
+        $almacen = 0;
+        if (filter_input(INPUT_GET,'b_codalmacen')) {
             $alm = new almacen();
             $almacen = $alm->get($_REQUEST['b_codalmacen']);
+            if ($almacen != 0) {
+                $titulo = $titulo . $almacen->nombre . ' ';
+            }
         }
-        if (isset($_REQUEST['b_codtarifa'])) {
+        $tarifa = 0;
+        if (filter_input(INPUT_GET,'b_codtarifa')) {
             $tar = new tarifa();
             $tarifa = $tar->get($_REQUEST['b_codtarifa']);
+            if ($tarifa != 0) {
+                $titulo = $titulo . $tarifa->nombre . ' ';
+            }
         }
-        
-        if ($familia != 0) {
-            $titulo = $familia->descripcion.' ';
-        }
-        if ($fabricante != 0) {
-            $titulo = $titulo.$fabricante->nombre.' ';
-        }
-        if ($almacen != 0) {
-            $titulo = $titulo.$almacen->nombre.' ';
-        }
-        if ($tarifa != 0) {
-            $titulo = $titulo.$tarifa->nombre.' ';
-        }
-        
+
         if ($logo){
             $size = getimagesize($logo);
             $width = $size[0] * 15 / $size[1];
             $pdf->SetHeaderData('../../'.$logo, $width, 'Catálogo', $titulo);
         } else {
-            $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $this->empresa->nombrecorto, 'Catálogo '.$_REQUEST['b_codfamilia'].' '.$_REQUEST['b_codfabricante'].' '.$_REQUEST['b_codalmacen'].' '.$_REQUEST['codtarifa']);
+            $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $this->empresa->nombrecorto, 'Catálogo '.filter_input(INPUT_GET, 'b_codfamilia').' '.filter_input(INPUT_GET,'b_codfabricante').' '.filter_input(INPUT_GET,'b_codalmacen').' '.filter_input(INPUT_GET,'b_codtarifa'));
         }
         
 // set header and footer fonts
@@ -234,15 +238,21 @@ class catalogo_imprimir extends fbase_controller
 
         //Modificado por Tecnolife
         //$this->b_constock = isset($_REQUEST['b_constock']);
-        if ($_REQUEST['b_constock'] == 1) {
+        //if ($_REQUEST['b_constock'] == 1) {
+        $this->b_constock = '';
+        if (filter_input(INPUT_GET, 'b_constock') && filter_input(INPUT_GET, 'b_constock') == 1 ) {
             $this->b_constock = 1;
         } 
         //$this->b_bloqueados = isset($_REQUEST['b_bloqueados']);
-        if ($_REQUEST['b_bloqueados'] == 1) {
+        //if ($_REQUEST['b_bloqueados'] == 1) {
+        $this->b_bloqueados = '';
+        if (filter_input(INPUT_GET, 'b_bloqueados') && filter_input(INPUT_GET, 'b_bloqueados') == 1 ) {
             $this->b_bloqueados = 1;
         } 
         //$this->b_publicos = isset($_REQUEST['b_publicos']);
-        if ($_REQUEST['b_publicos'] == 1) {
+        //if ($_REQUEST['b_publicos'] == 1) {
+        $this->b_publicos = '';
+        if (filter_input(INPUT_GET, 'b_publicos') && filter_input(INPUT_GET, 'b_publicos') == 1 ) {
             $this->b_publicos = 1;
         } 
 
